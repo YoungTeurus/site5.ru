@@ -2,6 +2,7 @@
 
 $message = array();
 
+// Возращает переменные сессии, устанавливаемые в loadlogs.php
 session_start();
 if (isset($_SESSION["running"])){
     $message["running"] = $_SESSION["running"];

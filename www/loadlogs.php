@@ -8,10 +8,13 @@ $logfileExtention = 'log';  // Расширение файла с логами
 
 $message = array();
 
+// Regex для работы со строками из файла
 $logRegex = '/((\d{1,3}\.){3}(\d{1,3})) - (-|"") \[((\d+)\/(\w+)\/(\d+):(\d+):(\d+):(\d+) .*?)\] "(.*?) ((.*?)(\?.*?)?) (.*?)" (\d+) (\d+|-) "((.*?)(\?.*?)?)" "(.*?)"/';
 
+// Если дана команда на загрузку:
+// Используется $_REQUEST для дебага, чтобы можно было работать и через браузер и через формы
 if (isset($_REQUEST['load'])){
-    $message["load"] = "true";
+    $message["load"] = true;
 
     // Начало подготовки БД
     // Подклчение к БД:
@@ -22,20 +25,7 @@ if (isset($_REQUEST['load'])){
     catch (PDOException $e){
         print "Error!:" . $e->getMessage() . "<br/>";
         die();
-    }
-
-    // Подготовленный запрос:
-    $addLog = $db->prepare("INSERT INTO logs(clientIp, date, requestType, requestURL, requestVersion, answerCode, answerLength, refererURL, userAgent) VALUES (:clientIp, :date, :requestType, :requestURL, :requestVersion, :answerCode, :answerLength, :refererURL, :userAgent);");
-    $addLog->bindParam(':clientIp'          , $clientIp);
-    $addLog->bindParam(':date'              , $date);
-    $addLog->bindParam(':requestType'       , $requestType);
-    $addLog->bindParam(':requestURL'        , $requestURL);
-    $addLog->bindParam(':requestVersion'    , $requestVersion);
-    $addLog->bindParam(':answerCode'        , $answerCode);
-    $addLog->bindParam(':answerLength'      , $answerLength);
-    $addLog->bindParam(':refererURL'        , $refererURL);
-    $addLog->bindParam(':userAgent'         , $userAgent);
-    // Конец подготовки БД
+    }// Конец подготовки БД
 
     $logfileFilename = $logfileName . "." . $logfileExtention;
     $tempLogfileFilename = $logfileName . "." . $logfileExtention . "temp";
@@ -46,6 +36,7 @@ if (isset($_REQUEST['load'])){
     // Количество строк для чтения:
     // Если не указано - defaultRowsPerQuery.
     // Если указано - не более maxRowsPerQuery.
+    // TODO: добавить htmlspecialchars!
     //$_REQUEST['rows'] = htmlspecialchars($_REQUEST['rows']);
     $rowsToRead = isset($_REQUEST['rows']) ? ($_REQUEST['rows'] <= $maxRowsPerQuery ? $_REQUEST['rows'] : $maxRowsPerQuery ) : $defaultRowsPerQuery;
     session_start();
@@ -59,7 +50,9 @@ if (isset($_REQUEST['load'])){
     // Эксклюзивная блокировка: только один процесс может работать с этим файлом.
     if (flock($logfile, LOCK_EX)){
 
+        // Строка для хранения всех запросов
         $allQueries = "";
+        // Устанавливаем атрибут в состяние для работы без prepare():
         $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, 0);
         // Обрабатываем нужные строки...
         while (!feof($logfile) && $currentRow < $rowsToRead){
@@ -85,33 +78,19 @@ if (isset($_REQUEST['load'])){
                 '". $matches[22] ."'
                 );";
                 $allQueries .= $queryStr;
-                
-                // $clientIp =         $matches[1];
-                // $requestType =      $matches[12];
-                // $requestURL =       $matches[14];
-                // $requestVersion =   $matches[16];
-                // $answerCode =       $matches[17];
-                // $answerLength =     $matches[18];
-                // $refererURL =       $matches[20] !== "-" ? $matches[20] : NULL;
-                // $userAgent =        $matches[22];
-
-                
-
-                // $addLog->execute();
             }
             
             $currentRow++;
+            // Производим загрузку в БД и сохраняем в сессию количество уже загруженных строк каждые 100 строк (или на последней строке):
             if ($currentRow % 100 == 0 || $currentRow == $rowsToRead){
-                // $temp = $db->prepare($allQueries);
-                // $temp->execute();
                 $db->exec($allQueries);
                 $allQueries = "";
-                // Сохраняем в сессию количество уже загруженных строк каждые 100 строк:
                 session_start();
                 $_SESSION['rowsReady'] = $currentRow;
                 session_commit();
             }
         }
+        // Устанавливаем атрибут в состяние по умолчанию:
         $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, 1);
         // Записываем все остальные в TEMP:
         while (!feof($logfile)){
@@ -133,9 +112,10 @@ if (isset($_REQUEST['load'])){
     }
 }
 else{
-    $message["load"] = "false";
+    $message["load"] = false;
 }
 
+// После окончания закрузки выставляем переменную сессии:
 session_start();
 $_SESSION['running'] = false;
 session_commit();
