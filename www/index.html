@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <script src="./scripts/jquery-3.4.1.min.js"></script>
+        <script src="./scripts/index.js"></script>
+        <link rel="stylesheet" href="styles/dist/styles.css">
+    </head>
+    <body>
+        <header>
+            <div class="container container-wide">
+                <h1 class="title">Загрузка логов в базу данных</h1>
+                <nav class="container container-wide flex flex-row flex-evenly">
+                    <div><a href="logs.html">Просмотреть логи</a></div>
+                    <div></div><a href="index.html">Загрузить логи</a></div>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <div class="container container-wide">
+                <form id="loadOptions" class="container flex flex-column">
+                    <div><input id="startLoading" type="submit" value="Начать загрузку"></div>
+                    <div><label for="rowsNumber">Количество строк:</label><input id="rowsNumber" type="number" min="1" value="100" max="100000"></div>
+                    <label for="loadProgress">Процесс загрузки:</label>
+                    <progress id="loadProgress" value="0"></progress>
+                </form>
+                <div class="container flex flex-column">
+                    <p>Результат запроса:</p>
+                    <div id="result" class="container"></div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

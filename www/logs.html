@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <script src="./scripts/jquery-3.4.1.min.js"></script>
+        <script src="./scripts/logs.js"></script>
+        <link rel="stylesheet" href="styles/dist/styles.css">
+        <link rel="stylesheet" href="styles/dist/tables.css">
+    </head>
+    <body>
+        <header>
+            <div class="container container-wide">
+                <h1 class="title">Просмотр логов из базы данных</h1>
+                <nav class="container container-wide flex flex-row flex-evenly">
+                    <div><a href="logs.html">Просмотреть логи</a></div>
+                    <div></div><a href="index.html">Загрузить логи</a></div>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <div class="container container-wide flex flex-column">
+                <form class="container container-wide flex flex-column">
+                    <div class="container flex flex-row">
+                        <div><label for="logsCount">Количество записей:</label><input id="logsCount" type="number" min=0 value=20 max=100></div>
+                        &nbsp;
+                        <div><label for="logsOffset">Смещение</label><input id="logsOffset" type="number" min=0 value="0"></div>
+                        &nbsp;
+                        <button id="getLogs">Получить логи</button>
+                    </div>
+                    <div class="container flex flex-row">
+                        <div><label for="groupByColumn">Подсчитать количество записей по столбцу:&nbsp;</label><select id="groupByColumn">
+                            <option value="">-Ни по одному-</option>
+                        </select></div>
+                        &nbsp;
+                        <div><label for="sortGroupByColumn">Сортировать по столбцу:&nbsp;</label><select id="sortGroupByColumn">
+                            <option value="count">С количеством</option>
+                            <option value="value">С значениями</option>
+                        </select></div>
+                        &nbsp;
+                        <div class="flex flex-row flex-items-center"><label for="descendGroupOrder">Установите для порядка по убыванию:&nbsp;</label><input id="descendGroupOrder" type="checkbox" checked></div>
+                    </div>
+                    <div class="container flex flex-row">
+                        <div class="flex flex-row flex-items-center">
+                            <label for="sortByColumn">Сортировать по столбцу:&nbsp;</label><select id="sortByColumn">
+                                <option value="">-Ни по одному-</option>
+                            </select>
+                        </div>
+                        &nbsp;
+                        <div class="flex flex-row flex-items-center"><label for="descendSortOrder">Установите для порядка по убыванию:&nbsp;</label><input id="descendSortOrder" type="checkbox"></div>
+                        &nbsp;
+                        <div class="container flex flex-row flex-items-center">Подсчёт количества стоит в приоритете перед сортировкой!</div>
+                    </div>
+                </form>
+                <table id="dataTable">
+                    <thead>
+                        <th>Нажмите "Получить логи"</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>чтобы заполнить таблицу данными</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </body>
+</html>

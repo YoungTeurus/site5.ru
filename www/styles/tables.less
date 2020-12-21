@@ -1,0 +1,28 @@
+.border{
+    border: 1px solid black;
+}
+
+table{
+    .border();
+    width: 100%;
+
+    thead{
+        th{
+            background-color: rgb(30, 141, 20);
+            color: white;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    td{
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+
+    tr:nth-child(even){
+        background-color: rgb(231, 231, 231);
+    }
+    tr:nth-child(odd){
+        background-color: rgb(255, 255, 255);
+    }
+}
